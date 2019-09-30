@@ -1,0 +1,13 @@
+---
+filebeat_major_version: "6.x"
+filebeat_version: "6.4.3"
+filebeat_version_lock: false
+use_repository: false
+use_file: true
+start_service: true
+filebeat_restart_on_change: true
+filebeat_user: root
+filebeat_group: root
+filebeat_file_mask: 0700
+filebeat_config: {}
+filebeat_conf_dir: "/etc/filebeat"

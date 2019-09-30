@@ -1,0 +1,22 @@
+---
+
+- name: RedHat - copy apm-server package to remote
+  become: yes
+  copy:
+    src: "{{local_repository}}/apm-server/{{package}}"
+    dest: /tmp/{{package}}
+  when: use_file | bool
+  notify: restart apm-server
+
+
+- name: RedHat - Install apm-server from file
+  become: yes
+  yum:
+    name: /tmp/{{package}}
+    state: present
+  when: use_file | bool
+  notify: restart apm-server
+
+- name: Configure the Beat to start automatically during boot
+  become: yes
+  shell: chkconfig --add apm-server

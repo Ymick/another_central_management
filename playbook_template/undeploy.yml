@@ -1,0 +1,13 @@
+- name: Uninstall software
+  hosts: %s
+  gather_facts: False
+  roles:
+    - {
+        role: common
+      }
+    - {
+        role: undeploy_software,
+        component: %s
+    }
+  vars:
+    start_service: true

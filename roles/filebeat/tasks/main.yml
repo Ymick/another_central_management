@@ -1,0 +1,20 @@
+---
+- name: Install filebeat packages for Debian
+  import_tasks: filebeat-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Include filebeat packages for RedHat
+  import_tasks: filebeat-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Config filebeat
+  import_tasks: filebeat-config.yml
+  tags:
+      - config
+
+- meta: flush_handlers
+
+- name: Make sure filebeat is started
+  service: name=filebeat state=started enabled=yes
+  when: start_service
+

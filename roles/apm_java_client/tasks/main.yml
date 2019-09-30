@@ -1,0 +1,88 @@
+---
+- name: Add group "apm"
+  group: name={{ group }} system=yes
+
+- name: Add user "apm"
+  user: name={{ user }} group={{ group }} shell=/sbin/nologin system=yes
+
+- name: Create Directories
+  become: yes
+  file: path={{ item }} state=directory owner={{ user }} group={{ group }} mode={{file_mask}} recurse=yes force=true
+  with_items:
+    - "{{home_dir}}"
+
+- name: Download kafka tarball
+  get_url: url={{package_url}}/{{ version }}.tgz dest={{tmp_dir}}/{{ version }}.tgz force=true
+
+- name: Extract the tarball
+  unarchive:
+     src: "{{tmp_dir}}/{{ version }}.tgz"
+     dest: "{{tmp_dir}}"
+     copy: no
+     group: "{{group}}"
+     owner: "{{user}}"
+     mode: "{{file_mask}}"
+
+- name: Move extracted files to kafka home
+  shell: "cp -rfp {{tmp_dir}}/{{ version }}/* {{home_dir}}"
+
+- name: Remove temp installation files
+  file: path={{item}} state=absent
+  with_items:
+        - "{{tmp_dir}}/{{ version }}.tgz"
+        - "{{tmp_dir}}/{{ version }}"
+
+- name: Create kafka config file
+  template:
+     src: server.properties.j2
+     dest: "{{conf_dir}}/server.properties"
+     group: "{{group}}"
+     owner: "{{user}}"
+     mode: "{{file_mask}}"
+
+  notify: Restart kafka
+
+- name: Configure Kafka env file
+  template:
+     src: kafka-env.sh.j2
+     dest: "{{conf_dir}}/kafka-env.sh"
+     group: "{{group}}"
+     owner: "{{user}}"
+     mode: "{{file_mask}}"
+
+  notify: Restart kafka
+
+- name: Upload log4j configs
+  template:
+      src: log4j.properties.j2
+      dest: "{{ conf_dir }}/log4j.properties"
+      owner: "{{user}}"
+      group: "{{group}}"
+      mode: "{{file_mask}}"
+  notify: Restart kafka
+
+- set_fact: use_system_d={{(ansible_distribution == 'Debian' and ansible_distribution_version | version_compare('8', '>=')) or (ansible_distribution in ['RedHat','CentOS'] and ansible_distribution_version | version_compare('7', '>=')) or (ansible_distribution == 'Ubuntu' and ansible_distribution_version | version_compare('15', '>=')) }}
+
+- name: Install Kafka init script
+  template: src=init/kafka.j2 dest=/etc/init.d/kafka mode=0755 force=yes
+  when: not use_system_d
+  notify:
+    - Reload systemd
+    - Restart kafka
+
+
+- name: Install Systemd script
+  become: yes
+  template: src=systemd/kafka.service.j2 dest=/usr/lib/systemd/system/kafka.service mode=0644 force=yes
+  when: use_system_d
+  notify:
+  - Reload systemd
+  - Restart kafka
+
+- meta: flush_handlers
+
+- name: Make sure Kafka is running
+  service: name=kafka enabled=yes state=started
+
+- name: Add Kafka binaries to PATH
+  template: src=kafka.sh.j2 dest=/etc/profile.d/ owner=root group=root mode=0755

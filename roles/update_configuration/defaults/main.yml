@@ -1,0 +1,16 @@
+---
+kafka_user: kafka
+kafka_group: kafka
+kafka_home_dir: /opt/kafka
+kafka_data_dir: "{{kafka_home_dir}}/data"
+kafka_conf_dir: "{{kafka_home_dir}}/config"
+kafka_tmp_dir: /tmp/kafka
+kafka_log_dir: /var/log/kafka
+kafka_version: 2.11-1.0.0
+kafka_port: "{{kafka_api_port}}"
+kafka_package_url: http://www-us.apache.org/dist/kafka/1.1.0/
+kafka_file_mask: 0755
+kafka_heap_opts: "-Xms2G -Xmx2G"
+kafka_jvm_performance_opts: "-server -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent -Djava.awt.headless=true"
+kafka_zookeeper_address: "127.0.0.1:2181"
+kafka_producer_quota: "{{(1048576/(groups['kafka']|length))|int}}"

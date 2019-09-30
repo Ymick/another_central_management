@@ -1,0 +1,12 @@
+---
+- name: Copy filebeat.yml File
+  become: yes
+  template: src=roles/update_configuration/templates/filebeat/filebeat.yml.j2 dest={{filebeat_conf_dir}}/filebeat.yml owner={{ filebeat_user }} group={{ filebeat_group }} mode={{filebeat_file_mask}} force=yes
+  register: system_change
+  notify: restart filebeat
+
+- name: Copy fields.yml File
+  become: yes
+  template: src=roles/update_configuration/templates/filebeat/fields.yml.j2 dest={{filebeat_conf_dir}}/fields.yml owner={{ filebeat_user }} group={{ filebeat_group }} mode={{filebeat_file_mask}} force=yes
+  register: system_change
+  notify: restart filebeat

@@ -1,0 +1,27 @@
+---
+
+- name: upload configuration
+#  become: yes
+  when: use_template == false
+  copy:
+    src: "{{configure_file}}"
+    dest: "{{config_path}}"
+#    owner: "{{type}}"
+#    group: "{{type}}"
+#    mode: 0644
+
+
+- name: upload configuration with template
+#  become: yes
+  when: use_template == true
+  template:
+    src: "{{configure_file}}"
+    dest: "{{config_path}}"
+#    owner: "{{type}}"
+#    group: "{{type}}"
+#    mode: 0644
+
+- name: restart service
+  become: yes
+  when: upload_only == false
+  service: name={{type}} state=restarted enabled=yes

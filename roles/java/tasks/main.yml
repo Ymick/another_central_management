@@ -1,0 +1,43 @@
+---
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+  when: ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
+
+- name: Define java_packages.
+  set_fact:
+    java_packages: "{{ default_java_packages | list }}"
+  when: java_packages is not defined
+
+- set_fact: java_state="present"
+
+- set_fact: java_state="latest"
+  when: update_java == true
+
+- name: RedHat - Ensure Java is installed
+  become: yes
+  yum: name={{ java_packages }} state={{java_state}}
+  when: ansible_os_family == 'RedHat'
+
+- name: Debian - Refresh java repo
+  become: yes
+  apt: update_cache=yes
+  changed_when: false
+  when: ansible_os_family == 'Debian'
+
+- name: Debian - Install Java from repo
+  become: yes
+  apt: name={{ java_packages }} state={{java_state}}
+  when: ansible_os_family == 'Debian'
+
+- shell: java -version 2>&1 | grep openjdk
+  register: installed_java_version
+  ignore_errors: True
+  changed_when: false
+
+- debug: msg="Installed java version {{installed_java_version.stdout_lines | to_json}}"
+
+- name: refresh the java ca-certificates
+  become: yes
+  command: /var/lib/dpkg/info/ca-certificates-java.postinst configure
+  when: ansible_distribution == 'Ubuntu' and installed_java_version.rc == 0
+  changed_when: false

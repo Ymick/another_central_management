@@ -1,0 +1,27 @@
+// -----登录界面-----
+@form-item-bg: #f2f6f9;
+
+.form-box {
+  border-color: @form-item-bg;
+  border-radius: 0;
+  font-size: 14px;
+  padding: 13px 12px;
+  height: auto;
+}
+
+.login {
+  .ivu-input-group-prepend {
+    .form-box;
+    background-color: #fff;
+  }
+  .ivu-input {
+    .form-box;
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+  .ivu-form-item-error-tip {
+    top: ~'calc(100% + 13px)';
+  }
+}

@@ -1,0 +1,19 @@
+[Unit]
+Description=Apache Kafka server
+Documentation=http://kafka.apache.org/documentation.html
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
+
+[Service]
+Type=simple
+EnvironmentFile=-{{kafka_conf_dir}}/kafka-env.sh
+WorkingDirectory={{kafka_home_dir}}
+User={{kafka_user}}
+Group={{kafka_group}}
+ExecStart={{kafka_home_dir}}/bin/kafka-server-start.sh {{ kafka_conf_dir }}/server.properties
+ExecStop={{kafka_home_dir}}/bin/kafka-server-stop.sh
+Restart=on-failure
+SyslogIdentifier=kafka
+
+[Install]
+WantedBy=multi-user.target

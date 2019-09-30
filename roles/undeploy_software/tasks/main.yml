@@ -1,0 +1,6 @@
+# TODO, should support different platform in the future
+- name: uninstall software
+  become: yes
+  yum:
+    name: "{{component}}"
+    state: absent

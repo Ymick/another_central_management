@@ -1,0 +1,12 @@
+---
+
+allow_duplicates: yes
+
+galaxy_info:
+  author: lij021
+  description: Java for Linux
+  license: "Apache"
+  min_ansible_version: 2.3.2
+
+
+dependencies: []

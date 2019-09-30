@@ -1,0 +1,16 @@
+- name: Deploy software
+  hosts: %s
+  roles:
+    - {
+        role: common
+      }
+    - {
+        role: %s,
+        local_repository: ./install_repository,
+        package: "%s",
+        use_repository: false,
+        use_file: true,
+        package_url: "{{local_repository_url}}/filebeat"
+    }
+  vars:
+    start_service: true

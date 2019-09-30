@@ -1,0 +1,30 @@
+filebeat.prospectors:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/{{ hostvars[inventory_hostname]['service'] }}/*.log
+  tail_files: true
+  multiline.pattern: '^[[:space:]]+|^Caused by:|^.+Exception:|^\d+\serror'
+  multiline.negate: false
+  multiline.match: after
+  fields:
+    app_id: the_app
+    service: "{{ hostvars[inventory_hostname]['service'] }}"
+    ip_address: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+    topic: the_topic
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+setup.template.settings:
+  index.number_of_shards: 3
+  #index.codec: best_compression
+  #_source.enabled: false
+output.kafka:
+  enabled: true
+  hosts: [{{kafka_url}}]
+
+  topic: '%{[fields][topic]}'
+
+max_procs: 1

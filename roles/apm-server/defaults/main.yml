@@ -1,0 +1,13 @@
+---
+apm_server_major_version: "6.x"
+apm_server_version: "6.4.3"
+apm_server_version_lock: false
+use_repository: false
+use_file: true
+start_service: true
+apm_server_restart_on_change: true
+apm_server_user: root
+apm_server_group: root
+apm_server_file_mask: 0700
+apm_server_config: {}
+apm_server_conf_dir: "/etc/apm-server"

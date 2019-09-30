@@ -1,0 +1,16 @@
+- name: update config file and reset
+  hosts: %s
+
+#  gather_facts: False
+  roles:
+    - {
+        role: common
+      }
+    - {
+        role: update_configuration,
+        configure_file: %s,
+        config_path: %s,
+        type: %s,
+        upload_only: %s,
+        use_template: %s
+      }

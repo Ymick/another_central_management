@@ -1,0 +1,5 @@
+---
+user: apm
+group: apm
+home_dir: /opt/elastic_apm
+file_mask: 0755

@@ -1,0 +1,9 @@
+- name: check rpm
+  hosts: %s
+  gather_facts: False
+  roles:
+    - {
+        role: check_rpm,
+        software_to_check: %s
+    }
+

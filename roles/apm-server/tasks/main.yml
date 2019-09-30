@@ -1,0 +1,20 @@
+---
+#- name: Install apm server packages for Debian
+#  import_tasks: apm-Debian.yml
+#  when: ansible_os_family == 'Debian'
+#
+- name: Include apm server packages for RedHat
+  import_tasks: apm-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Config apm server
+  import_tasks: apm-config.yml
+  tags:
+      - config
+
+- meta: flush_handlers
+
+- name: Make sure filebeat is started
+  service: name=apm-server state=started enabled=yes
+  when: start_service
+

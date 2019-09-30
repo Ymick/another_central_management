@@ -1,0 +1,41 @@
+---
+- name: RedHat - add filebeat repository
+  become: yes
+  template: src=filebeat.repo dest=/etc/yum.repos.d/filebeat-{{ filebeat_major_version }}.repo
+  when: use_repository | bool
+
+- name: RedHat - Install filebeat from repository
+  become: yes
+  yum: name=filebeat{% if filebeat_version is defined and filebeat_version != ""  %}-{{ filebeat_version }}{% endif %} state=present update_cache=yes
+  when: use_repository | bool
+  notify: restart filebeat
+  until: '"failed" not in redhat_filebeat_install_from_repo'
+  retries: 5
+  delay: 10
+
+- name: RedHat - Install filebeat from custom url
+  become: yes
+  yum: name={% if filebeat_custom_package_url is defined %}{{ filebeat_custom_package_url }}{% else %}{{ package_url }}-{{ filebeat_version }}-x86_64.rpm{% endif %} state=present
+  when: (not use_repository | bool) and (not use_file | bool)
+  notify: restart filebeat
+
+- name: RedHat - copy filebeat package to remote
+  become: yes
+  copy:
+    src: "{{local_repository}}/{{package}}"
+    dest: /tmp/{{package}}
+  when: use_file | bool
+  notify: restart filebeat
+
+
+- name: RedHat - Install filebeat from file
+  become: yes
+  yum:
+    name: /tmp/{{package}}
+    state: present
+  when: use_file | bool
+  notify: restart filebeat
+
+- name: Configure the Beat to start automatically during boot
+  become: yes
+  shell: chkconfig --add filebeat

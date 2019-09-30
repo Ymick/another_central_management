@@ -1,0 +1,10 @@
+---
+elk_version: "6.6.1"
+local_repository_url: "http://0.0.0.0:8000"
+es_api_port: 8080
+kafka_api_port: 9092
+elasticsearch_url: "{% for node in groups['elasticsearch'] %}\"{{hostvars[node]['ansible_host']}}:{{hostvars[node]['es_port']}}\"{% if not loop.last %},{% endif %}{% endfor %}"
+kafka_url: "{% for node in groups['kafka'] %}\"{{hostvars[node]['ansible_host']}}:{{kafka_api_port}}\"{% if not loop.last %},{% endif %}{% endfor %}"
+kafka_url_string: "{% for node in groups['kafka'] %}{{hostvars[node]['ansible_host']}}:{{kafka_api_port}}{% if not loop.last %},{% endif %}{% endfor %}"
+file_mask: 0755
+

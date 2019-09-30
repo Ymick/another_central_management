@@ -1,0 +1,11 @@
+---
+
+allow_duplicates: yes
+
+galaxy_info:
+  author: lij021
+  description: Filebeat for Linux
+  license: "Apache"
+
+
+dependencies: []

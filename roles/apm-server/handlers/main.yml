@@ -1,0 +1,7 @@
+---
+- name: restart apm-server
+  become: yes
+  service: name=apm-server state=restarted enabled=yes
+  when:
+    - apm_server_restart_on_change
+    - start_service

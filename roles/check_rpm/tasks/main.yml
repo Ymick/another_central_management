@@ -1,0 +1,5 @@
+# TODO, should support different platform in the future
+- name: Check if rpm is installed
+  yum:
+    list: "{{software_to_check}}"
+

@@ -1,0 +1,54 @@
+QH_COMMON_LOG %{TIMESTAMP_ISO8601:iso_timestamp}\|%{DATA:level}\|%{DATA:thread}\|%{JAVACLASS:logger}\|%{DATA:linenumber}\|
+IAM_CAS_USER_LOG %{TIMESTAMP_ISO8601:iso_timestamp}\|%{DATA:level}\|%{DATA:thread}\|%{JAVACLASS:logger}\|%{DATA:linenumber}\|User %{DATA:loginUser} login with %{WORD:loginClient}
+IAM_CAS_LOGIN_FAIL_LOG %{TIMESTAMP_ISO8601:iso_timestamp}\|%{DATA:level}\|%{DATA:thread}\|%{JAVACLASS:logger}\|%{DATA:linenumber}\|%{DATA:error},clientId is %{DATA:loginClient},account is %{WORD:loginUser}
+COMMON_ACCESS_LOG \[%{HTTPDATE:httpd_timestamp}\] %{IPORHOST:clientip} %{HTTPDUSER:auth} %{DATA:userAgent} %{WORD:verb} %{DATA:request} HTTP/%{NUMBER:httpversion} %{NUMBER:responsecode} (?:%{NUMBER:bytes}|-)
+COMMON_SP_LOG \[\s?%{DATA:level}\s?\]%{TIMESTAMP_ISO8601:iso_timestamp} \[%{DATA:thread}\] %{DATA:logger}\s
+ITSM_ERROR_LOG %{COMMON_SP_LOG}
+ASM_BALANTFLOW_LOG \[\s?%{DATA:level}\s?\] \[%{TIMESTAMP_ISO8601:iso_timestamp}\] %{JAVACLASS:logger} \[%{DATA:thread}\] -
+ASM_SP_LOG %{COMMON_SP_LOG}
+OSM_ODAP_LOG %{DATA:no_date_timestamp}\s%{DATA:thread}\s%{DATA:level}\s?\[%{DATA:logger}\]\s
+MALL_CORE_LOG %{TIMESTAMP_ISO8601:iso_timestamp}\s?\[%{DATA:thread}\]\s?%{DATA:level}\s?\[traceId:%{DATA:traceid}\]\s?%{DATA:logger}\s
+MALL_IOCSS_TOMCAT_LOG \[.*\] %{TIMESTAMP_ISO8601:iso_timestamp}\s?\-\s?%{DATA:logger}\s-%{DATA:clientPhone}\s?\[%{DATA:thread}\]\s%{DATA:level}\s
+MALL_IOCSS_HADOOP_LOG %{TIMESTAMP_ISO8601:iso_timestamp}\s?%{DATA:level}\s?\[%{DATA:thread}\]\s
+MALL_AMS_LOG %{DATA:no_date_timestamp}\s%{DATA:level}\s?\[%{DATA:logger}\]\s?\(%{DATA:thread}\)\s
+QH_WECHAT_LOG %{TIMESTAMP_ISO8601:iso_timestamp}\s??%{DATA:level}\s\[%{DATA:logger}\]\s?-
+PLATFORM_SYSLOG ,(?:%{SYSLOGTIMESTAMP:timestamp}|%{TIMESTAMP_ISO8601:timestamp8601}),HostName=%{SYSLOGHOST:HostName},IP=%{IPORHOST:IP},Tag=%{DATA:Tag}:?,ProgramName=%{DATA:ProgramName},Procid=%{NUMBER:Procid}?,Facility=%{WORD:Facility},Sev=%{WORD:Sev},AppName=%{DATA:AppName},Msg=%{DATA:Msg}
+KAFKA_LOG ^\[%{TIMESTAMP_ISO8601:iso_timestamp}\]\s%{DATA:level}\s\[%{DATA:thread}\]
+ELK_LOG ^\[%{TIMESTAMP_ISO8601:iso_timestamp}\]\[%{DATA:level}\]\[%{DATA:logger}\]\s
+
+SERVER_LOG ^(%{TIME:timestamp}|%{TIMESTAMP_ISO8601:iso_timestamp})%{SPACE}%{LOGLEVEL:level}%{SPACE}\[%{DATA:logger}\]%{SPACE}\(%{DATA:thread}\)
+QHC_CORE_LOG ^%{TIMESTAMP_ISO8601:timestamp}%{SPACE}\[%{DATA:thread}\]%{SPACE}\[%{DATA:logger}:%{DATA:linenumber}\]%{SPACE}\[%{DATA:level}\]
+101226_101055_LOG ^%{TIMESTAMP_ISO8601:iso_timestamp}\s\[%{DATA:thread}\] \[?%{DATA:level}\s?\]? %{DATA:logger} -
+101178_LOG \[%{DATA}\]\[%{DATA:iso_timestamp}\]\[%{LOGLEVEL:level}\]\[%{DATA:logger}\]
+101293_LOG ^%{LOGLEVEL:level}%{SPACE}%{DATA:iso_timestamp}%{SPACE}\[%{DATA:logger}\]
+101011_101044_LOG ^\[?%{TIMESTAMP_ISO8601:iso_timestamp}\]?%{SPACE}\[%{DATA}\]%{SPACE}\[?%{DATA:level}\]?\s
+
+101047_101176_101307_LOG ^\[\s?%{DATA:level}\s?\] %{TIMESTAMP_ISO8601:iso_timestamp} \(%{DATA:logger}\)
+101010_LOG ^%{LOGLEVEL:level}%{SPACE}\[%{DATA}\]%{SPACE}%{TIMESTAMP_ISO8601:iso_timestamp}%{SPACE}\[%{DATA:thread}\]%{SPACE}+%{DATA:logger}
+101012_LOG \[\s?%{DATA:level}\s?\]\s?%{TIMESTAMP_ISO8601:iso_timestamp} \[%{DATA:logger}\]
+101012_LOG_2 ^%{TIMESTAMP_ISO8601:iso_timestamp}\s+%{LOGLEVEL:level}\s+%{DATA:logger}\s
+101043_LOG ^(%{TIME:timestamp}|%{TIMESTAMP_ISO8601:iso_timestamp})%{SPACE}%{LOGLEVEL:level}%{SPACE}\[%{DATA:logger}\]%{SPACE}%{DATA:thread} -
+
+101009_LOG ^%{TIMESTAMP_ISO8601:iso_timestamp}\s\[%{DATA:logger}\]-\[?%{LOGLEVEL:level}\s?\]\s
+101152_101197_101098_101028_101039_101132_401304_LOG   ^%{TIMESTAMP_ISO8601:iso_timestamp}\s+%{LOGLEVEL:level}\s+%{DATA:thread}\s%{DATA:logger}\s
+101137_LOG %{IPORHOST:remote_addr} - (%{USERNAME:user}|-) \[%{HTTPDATE:log_timestamp}\] \"(%{WORD:request_method}|-)\s+%{URIPATHPARAM:request}(?: HTTP/%{NUMBER:httpversion})\" %{NUMBER:responsecode} (?:%{NUMBER:bytes}|-) (?:%{NUMBER:duration}|-) "-" \"(?:%{DATA:userAgent}|-)\"
+101099_101145_LOG ^%{TIMESTAMP_ISO8601:iso_timestamp}\s+(?:%{LOGLEVEL:level}\s?)\s+(?:%{DATA:thread})\s+(?:%{DATA:logger})\s+
+CMDB_USER_LOG ^%{TIMESTAMP_ISO8601:timestamp} user:%{DATA:user}\|resource:%{DATA:resource}\|status_code:%{NUMBER:statusCode}
+QH_ACCESS_LOG ^%{IPORHOST:remote_addr} - - \[%{HTTPDATE:log_timestamp}\] \"?(%{WORD:request_method}|-)\s+%{URIPATHPARAM:request}(?: HTTP/%{NUMBER:httpversion})\"?\s+%{NUMBER:responsecode}
+101279_101276_LOG   ^\[\s?%{DATA:level}\s?\]\s+%{TIMESTAMP_ISO8601:iso_timestamp}\s+\(%{DATA:logger}\)
+101019_LOG  ^%{TIMESTAMP_ISO8601:iso_timestamp}\s+%{LOGLEVEL:level}\s+\[%{DATA:linenumber}\]\s+\[%{DATA:logger}\]
+IAM_ACCESS_LOG \[%{HTTPDATE:httpd_timestamp}\]\|%{DATA:remote_addr}\|%{DATA:clientip}\|%{DATA:userAgent}\|(%{WORD:request_method}|-)\s+%{URIPATHPARAM:request}(?: HTTP/%{NUMBER:httpversion})\|%{NUMBER:responsecode}\|(?:%{NUMBER:requesttime})\|(?:%{NUMBER:bytes}|-)
+GW_CORE_ACCESS_LOG %{TIMESTAMP_ISO8601:iso_timestamp}\|%{DATA:level}\|%{DATA:thread}\|%{JAVACLASS:logger}\|-1\|.*?+\s+\->\s+Service:\s+%{WORD:gateservicename}\|Request URL:\s+%{DATA:request}\|Request method:\s+%{DATA:request_method}\|
+GW_CORE_ERROR_LOG  %{TIMESTAMP_ISO8601:iso_timestamp}\|%{DATA:level}\|%{DATA:thread}\|%{JAVACLASS:logger}\|\|%{DATA:request}\|\|%{GREEDYDATA:errorType}
+BPM_CORE_LOG %{DATA} The password verification for the '%{WORD:loginUser}'
+SAFETY_WAF_LOG1  tag:%{DATA:syslog_flag}\s+site_id:%{NUMBER:site_id}\s+protect_id:%{NUMBER:protect_id}\s+dst_ip:%{IPV4:dst_ip}\s+dst_port:%{NUMBER:dst_port}\s+src_ip:%{IPV4:src_ip}\s+src_port:%{NUMBER:src_port}\s+method:%{DATA:method}\s+domain:%{DATA:domain}\s+uri:%{DATA:uri}\s+alertlevel:%{DATA:alert_level}\s+event_type:%{DATA:Attack_types}\s+stat_time:%{TIMESTAMP_ISO8601:stat_time}\s+policy_id:%{NUMBER:policy_id}\s+rule_id:%{NUMBER:rule_id}\s+action:%{DATA:action}\s+block:%{DATA:block}\s+block_info:%{DATA:block_info}\s+http:%{GREEDYDATA:URL}\s+
+SAFETY_WAF_LOG2  tag:%{DATA:syslog_flag}\s+stat_time:%{TIMESTAMP_ISO8601:stat_time}\s+cpu:%{NUMBER:cpu}\s+mem:%{NUMBER:memory}
+GW_CORE_LOG1     %{TIMESTAMP_ISO8601:iso_timestamp}\|%{DATA:level}\|%{DATA:thread}\|%{JAVACLASS:logger}\|\|\/%{WORD:service_name}%{DATA:temp}\|\|
+GW_CORE_LOG2     %{TIMESTAMP_ISO8601:iso_timestamp}\|%{DATA:level}\|%{DATA:thread}\|%{JAVACLASS:logger}\|\|%{WORD:service_name}\-%{DATA}\|Request URL:\s+%{DATA:request}\|
+GW_CORE_LOG3     %{TIMESTAMP_ISO8601:iso_timestamp}\|%{DATA:level}\|%{DATA:thread}\|%{JAVACLASS:logger}\|\|%{WORD:service_name}\-%{DATA}Filter Class:\s+%{WORD:filter_type}\s+Cost:\s+%{NUMBER:requesttime}\.
+GW_CORE_LOG4     %{TIMESTAMP_ISO8601:iso_timestamp}\|%{DATA:level}\|%{DATA:thread}\|%{JAVACLASS:logger}\|\|%{DATA:request}\|\|%{WORD:service_name}\-%{DATA}Filter Class:\s+%{WORD:filter_type}\s+Cost:\s+%{NUMBER:requesttime}\.
+GW_CORE_SERVICE_NAME \/%{WORD:service_name}
+LEC_CORE_AUTH_LOG %{TIMESTAMP_ISO8601iso_timestamp}s+-%{DATAlevel}s+s+[%{DATAthread}]s+%{DATA}-s+%{DATAaction}s+%{URIPATHPARAMrequest}
+LEARN_API_LOG   %{TIMESTAMP_ISO8601:iso_timestamp}\s+\|%{DATA:level}\s+\[%{DATA:thread}\]\s+%{DATA:logger}\s+
+BD_CRAWLER_LOG1  %{TIMESTAMP_ISO8601:iso_timestamp}\|%{DATA:level}\|%{DATA:thread}\|%{DATA:spider_type}\|url:\s+%{DATA:request}\s+
+BD_CRAWLER_LOG2  %{TIMESTAMP_ISO8601:iso_timestamp}\|%{DATA:level}\|%{DATA:thread}\|%{DATA:spider_type}\|

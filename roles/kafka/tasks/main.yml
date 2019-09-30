@@ -1,0 +1,100 @@
+---
+- name: Add group "kafka"
+  group: name={{ kafka_group }} system=yes
+
+- name: Add user "kafka"
+  user: name={{ kafka_user }} group={{ kafka_group }} shell=/sbin/nologin system=yes
+
+- name: Create Directories
+  become: yes
+  file: path={{ item }} state=directory owner={{ kafka_user }} group={{ kafka_group }} mode={{kafka_file_mask}} recurse=yes force=true
+  with_items:
+    - "{{kafka_home_dir}}"
+    - "{{kafka_conf_dir}}"
+    - "{{kafka_log_dir}}"
+    - "{{kafka_tmp_dir}}"
+
+- name: Create kafka data directory
+  file: path={{kafka_data_dir}} state=directory owner={{ kafka_user }} group={{ kafka_group }}
+  when: data_disks_devices is not defined or not data_disks_devices or data_disks_devices|length <= 0
+
+- name: Create /disk/{0..n}/kafka/data directories
+  file: path="/disk/{{ item.0 + 1 }}/{{kafka_data_dir}}" state=directory owner={{ kafka_user }} group={{ kafka_group }}
+  with_indexed_items: "{{ data_disks_devices }}"
+  when: data_disks_devices is defined and data_disks_devices
+
+- name: Download kafka tarball
+  get_url: url={{kafka_package_url}}/kafka_{{ kafka_version }}.tgz dest={{kafka_tmp_dir}}/kafka_{{ kafka_version }}.tgz force=true
+
+- name: Extract the tarball
+  unarchive:
+     src: "{{kafka_tmp_dir}}/kafka_{{ kafka_version }}.tgz"
+     dest: "{{kafka_tmp_dir}}"
+     copy: no
+     group: "{{kafka_group}}"
+     owner: "{{kafka_user}}"
+     mode: "{{kafka_file_mask}}"
+
+- name: Move extracted files to kafka home
+  shell: "cp -rfp {{kafka_tmp_dir}}/kafka_{{ kafka_version }}/* {{kafka_home_dir}}"
+
+- name: Remove temp installation files
+  file: path={{item}} state=absent
+  with_items:
+        - "{{kafka_tmp_dir}}/kafka_{{ kafka_version }}.tgz"
+        - "{{kafka_tmp_dir}}/kafka_{{ kafka_version }}"
+
+- name: Create kafka config file
+  template:
+     src: server.properties.j2
+     dest: "{{kafka_conf_dir}}/server.properties"
+     group: "{{kafka_group}}"
+     owner: "{{kafka_user}}"
+     mode: "{{kafka_file_mask}}"
+
+  notify: Restart kafka
+
+- name: Configure Kafka env file
+  template:
+     src: kafka-env.sh.j2
+     dest: "{{kafka_conf_dir}}/kafka-env.sh"
+     group: "{{kafka_group}}"
+     owner: "{{kafka_user}}"
+     mode: "{{kafka_file_mask}}"
+
+  notify: Restart kafka
+
+- name: Upload log4j configs
+  template:
+      src: log4j.properties.j2
+      dest: "{{ kafka_conf_dir }}/log4j.properties"
+      owner: "{{kafka_user}}"
+      group: "{{kafka_group}}"
+      mode: "{{kafka_file_mask}}"
+  notify: Restart kafka
+
+- set_fact: use_system_d={{(ansible_distribution == 'Debian' and ansible_distribution_version | version_compare('8', '>=')) or (ansible_distribution in ['RedHat','CentOS'] and ansible_distribution_version | version_compare('7', '>=')) or (ansible_distribution == 'Ubuntu' and ansible_distribution_version | version_compare('15', '>=')) }}
+
+- name: Install Kafka init script
+  template: src=init/kafka.j2 dest=/etc/init.d/kafka mode=0755 force=yes
+  when: not use_system_d
+  notify:
+    - Reload systemd
+    - Restart kafka
+
+
+- name: Install Systemd script
+  become: yes
+  template: src=systemd/kafka.service.j2 dest=/usr/lib/systemd/system/kafka.service mode=0644 force=yes
+  when: use_system_d
+  notify:
+  - Reload systemd
+  - Restart kafka
+
+- meta: flush_handlers
+
+- name: Make sure Kafka is running
+  service: name=kafka enabled=yes state=started
+
+- name: Add Kafka binaries to PATH
+  template: src=kafka.sh.j2 dest=/etc/profile.d/ owner=root group=root mode=0755
